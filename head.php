@@ -34,7 +34,11 @@
 <link rel="stylesheet" href="spiderweb.css">
 
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title><?php echo $title ?></title>
+<title>OWASP DevSecOps Maturity Model - <?php echo $title ?></title>
+
+<meta property="og:image" content="https://dsomm.timo-pagel.de/assets/images/logo.png">
+<meta property="og:title" content="OWASP DevSecOps Maturity Model">
+<meta property="og:description" content="The OWASP DevSecOps Maturity Model provides opportunities to harden DevOps strategies and shows how these can be prioritized">
 
 <!-- Latest compiled and minified CSS -->
 <link rel="stylesheet"
@@ -45,6 +49,19 @@
 
 <link href="print.css" rel="spiderweb.css" />
 <link href="print.css" rel="stylesheet" />
+
+<meta name="keywords" content="DevSecOps, DevOps, security, hardening">
+<meta name="author" content="Timo Pagel">
+<?php 
+	$url = "https://dsomm.timo-pagel.de{$_SERVER['SCRIPT_NAME']}"; 
+	echo "<link rel='canonical' href=$url>";
+?>
+<script>
+    $(function () {
+        $('[data-toggle="popover"]').popover({placement: "bottom", trigger: "hover"}).on('click', function () {
+            $(this).popover('toggle');
+        });
+    })</script>
 </head>
 
 <?php
@@ -60,19 +77,20 @@ $domain = 'messages';
 bindtextdomain ( $domain, "locale" );
 textdomain ( $domain );
 function getTableHeader() {
-	$headers = array (
-			gettext ( "Dimension" ),
-			gettext ( "Sub-Dimension" ),
-			gettext ( "Level 1: Basic understanding of security practices" ),
-			gettext ( "Level 2: Understanding of security practices" ),
-			gettext ( "Level 3: High understanding of security practices" ),
-			gettext ( "Level 4: Advanced understanding of security practives at scale" ) 
-	);
-	$headerContent = "<thead  class=\"thead-default\"><tr>";
-	foreach ( $headers as $header ) {
-		$headerContent .= "<th>$header</th>";
-	}
-	return $headerContent . "</tr></thead>";
+    $levels_labels = array_map(
+        function($item){
+            return "Level " . $item['level']. ": ". $item['label'];
+        },
+        readYaml("data/maturity-levels.yaml#/maturity-levels")
+    );
+    $headers = array_merge(
+        array ("Dimension", "Sub-Dimension"),
+        $levels_labels
+    );
+
+	return "<thead  class=\"thead-default\"><tr>"
+	    ."<th>" . implode("</th><th>", $headers) . "</th>"
+	    ."</tr></thead>";
 }
 function getInfos($dimensions) {
 	$text = "Activity Count: " . getElementCount ( $dimensions );
@@ -80,57 +98,57 @@ function getInfos($dimensions) {
 }
 function getElementCount($dimensions) {
 	$count = 0;
-	foreach ( $dimensions as $dimension => $subdimensions ) {
-		foreach ( $subdimensions as $subdimension => $element ) {
-			$count = $count + count ( $element );
-			echo "$subdimension: " . count ( $element ) . "<br>";
-		}
+    foreach ( getActions($dimensions) as list($dimension, $subdimension, $element) ) {
+        $count = $count + count ( $element );
+        echo "$subdimension: " . count ( $element ) . "<br>";
 	}
 	return $count;
 }
 function getTable($dimensions) {
 	$tableContent = "";
 	$tableContent .= getTableHeader ();
-	foreach ( $dimensions as $dimension => $subdimensions ) {
-		foreach ( $subdimensions as $subdimension => $element ) {
-			$tableContent .= "<tr>";
-			$tableContent .= "<td>";
-			$tableContent .= "$dimension";
-			$tableContent .= "</td>";
-			
-			$tableContent .= "<td>";
-			$tableContent .= "$subdimension";
-			$tableContent .= "</td>";
-			
-			for($i = 1; $i <= 4; $i ++) {
-				$tableContent .= "<td><ul>";
-				foreach ( $element as $elementName => $content ) {
-					$content = getContentForLevelFromSubdimensions ( $i, $content, $elementName );
-					if ($content != "") {
-						$elementLink = "detail.php?dimension=" . urlencode ( $dimension ) . "&subdimension=" . urlencode ( $subdimension ) . "&element=" . urlencode ( $elementName );
-						$tableContent .= "<a href='$elementLink' data-dimension='$dimension' data-subdimension='$subdimension' data-element='$elementName'";
-						if (elementIsSelected ( $elementName )) {
-							$tableContent .= "class='selected'";
-						}
-						$tableContent .= "><li>" . $content . "</li></a>";
-					}
-				}
-				$tableContent .= "</ul></td>";
-			}
-			
-			$tableContent .= "</tr>";
-		}
+
+	foreach ( getActions($dimensions) as list($dimension, $subdimension, $element) ) {
+        $dimension_icon = isset($dimensions[$dimension]["_meta"]["icon"]) ? $dimensions[$dimension]["_meta"]["icon"] : "$dimension.png";
+        $dimension_label = isset($dimensions[$dimension]["_meta"]["label"]) ? $dimensions[$dimension]["_meta"]["label"] : "$dimension";
+
+        $tableContent .= "<tr>";
+        $tableContent .= "<td>";
+        $tableContent .= "<img height='40px' src=\"assets/images/$dimension_icon\"> $dimension_label";
+        $tableContent .= "</td>";
+
+        $tableContent .= "<td>";
+        $tableContent .= "$subdimension";
+        $tableContent .= "</td>";
+
+        for($i = 1; $i <= NUMBER_LEVELS; $i ++) {
+            $tableContent .= "<td><ul>";
+            foreach ( $element as $activityName => $content ) {
+                $content = getContentForLevelFromSubdimensions ( $i, $content, $activityName );
+                if ($content != "") {
+                    $activityLink = "detail.php?dimension=" . urlencode ( $dimension ) . "&subdimension=" . urlencode ( $subdimension ) . "&element=" . urlencode ( $activityName );
+                    $tableContent .= "<a href='$activityLink' data-dimension='$dimension' data-subdimension='$subdimension' data-element='$activityName'";
+                    if (elementIsSelected ( $activityName )) {
+                        $tableContent .= "class='selected'";
+                    }
+                    $tableContent .= "><li>" . $content . "</li></a>";
+                }
+            }
+            $tableContent .= "</ul></td>";
+        }
+
+        $tableContent .= "</tr>";
 	}
 	$table = '<table class="table table-striped"><caption>OWASP DevSecOps Maturity Model</caption>';
 	$table .= $tableContent;
 	$table .= "</table>";
 	return $table;
 }
-function getContentForLevelFromSubdimensions($level, $subdimension, $elementName) {
+function getContentForLevelFromSubdimensions($level, $subdimension, $activityName) {
 	if ($level != $subdimension ["level"]) {
 		return "";
 	}
 	$tooltip = "<div class='popoverdetails'>" . build_table_tooltip ( $subdimension ) . "</div>";
-	return "<div data-toggle=\"popover\" data-title=\"$elementName\" data-content=\"$tooltip\" type=\"button\" data-html=\"true \">" . $elementName . "</div>";
+	return "<div data-toggle=\"popover\" data-title=\"$activityName\" data-content=\"$tooltip\" type=\"button\" data-html=\"true \">" . $activityName . "</div>";
 }
 

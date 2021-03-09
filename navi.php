@@ -4,17 +4,27 @@
 $nav = array(
     "index.php" => "Matrix",
     "spiderweb.php" => "Implementation Levels",
-    "scutter.php" => "Ease and Value of Implementation",
+    "scutter.php" => "Ease and Value",
+    "mappings.php?performed=true&planned=true" => "Mappings",
     "graph.php" => "Dependencies",
-    "report.php" => "Full Report",
+    "report.php?performed=true&planned=true" => "Full Report",
     //"usefulnessHardness.php" => "Heatmap",
-    "information.php" => "Information"
-);
+    "md.php?file=USAGE" => "Usage",
+    "md.php?file=README" => "About this project",
 
-echo "<ul class=\"nav nav-tabs\">";
+);
+?>
+<ul class="nav nav-tabs">
+
+<a class="navbar-brand" href="#">
+    <img height="100%" src="/assets/images/logo.png" alt="OWASP DevSecOps Maturity Model">
+</a>
+<?php
 foreach ($nav as $item => $value) {
     echo "<li ";
-    if(strpos($_SERVER['PHP_SELF'], $item)) {
+    //$item = preg_replace("/\?.*/", "", $item);
+    
+    if(strpos($_SERVER['REQUEST_URI'], $item)) {
         echo "class=\"active\"";
     }
     echo "role=\"\"><a href=\"$item\">$value</a></li>";

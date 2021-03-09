@@ -1,0 +1,7 @@
+version: "3.0"
+services:
+  dsomm:
+    build: .
+    ports:
+    - "8080:80"
+

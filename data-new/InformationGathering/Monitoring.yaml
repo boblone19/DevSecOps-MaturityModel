@@ -3,7 +3,7 @@ Monitoring:
   Advanced availablity and stability metrics:
     risk: Trends and advanced attacks are not detected.
     measure: Advanced metrics are gathered in relation to availability and stability.
-      For example unplanned downtimes per year.
+      For example unplanned downtime's per year.
     difficultyOfImplementation:
       knowledge: 3
       time: 3
@@ -14,6 +14,8 @@ Monitoring:
     - Simple application metrics
     - Visualized metrics
     samm2: o-incident-management|A|2
+    iso27001-2017:
+    - 12.1.3
   Advanced webapplication metrics:
     risk: People are not looking into tests results. Vulnerabilities not recolonized,
       even they are detected by tools.
@@ -28,10 +30,12 @@ Monitoring:
     - Simple application metrics
     - Visualized metrics
     samm2: o-incident-management|A|2
+    iso27001-2017:
+    - 12.6.1
   Alerting:
     risk: Incidents are discovered after they happend.
-    measure: Thresholds for metrics are set. In case the thresholds are reached, alarms
-      are send out. Which should get attention due to the critically.
+    measure: |
+      Thresholds for metrics are set. In case the thresholds are reached, alarms are send out. Which should get attention due to the critically.
     difficultyOfImplementation:
       knowledge: 2
       time: 5
@@ -42,12 +46,16 @@ Monitoring:
     - Visualized metrics
     samm2: o-operational-management|B|3
     samm: OE1-B
+    iso27001-2017:
+    - 16.1.2
+    - 16.1.4
+    - 12.1.4
   Coverage and control metrics:
-    risk: The effectiveness of configuration, patch and vulnerablity management is
+    risk: The effectiveness of configuration, patch and vulnerability management is
       unknown.
-    measure: "Usage of Coverage- and control-metrics to show the effectivness of the
-      security programm. Coverage is the degree in \n        which a specific security
-      control for a specifc target group is applied with all resoucres.\n        The
+    measure: "Usage of Coverage- and control-metrics to show the effectiveness of
+      the security program. Coverage is the degree in \n        which a specific security
+      control for a specific target group is applied with all resources.\n        The
       control degree shows the actual application of security standards and security-guidelines.
       Examples are gathering information on anti-virus, anti-rootkits, patch management,
       server configuration and vulnerability management."
@@ -61,6 +69,8 @@ Monitoring:
     - Visualized metrics
     implementation: https://ht.transparencytoolkit.org/FileServer/FileServer/OLD%20Fileserver/books/SICUREZZA/Addison.Wesley.Security.Metrics.Mar.2007.pdf
     samm2: o-incident-management|A|2
+    iso27001-2017:
+    - not explicitly covered by ISO 27001 - too specific
   Deactivation of unused metrics:
     risk: High resources are used while gathering unused metrics.
     measure: Deactivation of unused metrics helps to free resources.
@@ -73,11 +83,15 @@ Monitoring:
     dependsOn:
     - Visualized metrics
     samm2: o-incident-management|A|1
+    iso27001-2017:
+    - not explicitly covered by ISO 27001 - too specific
+    - 12.1.3
   Defence metrics:
     risk: IDS/IPS systems like packet- or application-firewalls detect and prevent
       attacks. It is not known how many attacks has been detected and blocked.
-    measure: Gathering of defence metrics like TCP/UDP sources enables to assume the
-      geographic location of the requeist.
+    measure: |
+      Gathering of defence metrics like TCP/UDP sources enables to assume the geographic location of the request.
+      Assuming a Kubernetes cluster with an egress-traffic filter (e.g. IP/domain based), an alert might be send out in case of every violation. For ingress-traffic, alerting might not even be considered.
     difficultyOfImplementation:
       knowledge: 3
       time: 5
@@ -86,7 +100,11 @@ Monitoring:
     level: 4
     dependsOn:
     - Visualized metrics
+    - Filter outcoing traffic
     samm2: o-incident-management|A|2
+    iso27001-2017:
+    - 12.4.1
+    - 13.1.1
   Grouping of metrics:
     risk: The analysis of metrics takes long.
     measure: Meaningful grouping of metrics helps to speed up analysis.
@@ -97,6 +115,9 @@ Monitoring:
     usefulness: 2
     level: 3
     samm2: o-incident-management|A|2
+    iso27001-2017:
+    - not explicitly covered by ISO 27001 - too specific
+    - 12.1.3
   Metrics are combined with tests:
     risk: Changes might cause high load due to programming errors.
     measure: Metrics during tests helps to identify programming errors.
@@ -109,9 +130,11 @@ Monitoring:
     dependsOn:
     - Grouping of metrics
     samm2: o-incident-management|A|2
+    iso27001-2017:
+    - not explicitly covered by ISO 27001
   Screens with metric visualization:
     risk: Security related information is discovered too late during an incident.
-    measure: By having an internal accessable screen with a security related dashboards
+    measure: By having an internal accessible screen with a security related dashboards
       helps to visualize incidents.
     difficultyOfImplementation:
       knowledge: 2
@@ -122,6 +145,9 @@ Monitoring:
     dependsOn:
     - Grouping of metrics
     samm2: o-incident-management|A|2
+    iso27001-2017:
+    - not explicitly covered by ISO 27001 - too specific
+    - 16.1.5
   Simple application metrics:
     risk: Attacks on an application are not recognized.
     measure: Gathering of application metrics helps to identify incidents like brute
@@ -134,6 +160,8 @@ Monitoring:
     level: 1
     implementation: Prometheus
     samm2: o-incident-management|A|1
+    iso27001-2017:
+    - 12.4.1
   Simple system metrics:
     risk: Without simple metrics analysis of incidents are hard. In case an application
       uses a lot of CPU from time to time, it is hard for a developer to find out
@@ -148,10 +176,12 @@ Monitoring:
     level: 1
     implementation: collectd
     samm2: o-incident-management|A|1
+    iso27001-2017:
+    - 12.1.3
   Targeted alerting:
-    risk: People are bored (irodiert) of incident alarm messages, as they are not
-      responsbile to react.
-    measure: By the defintion of target groups for incidents people are only getting
+    risk: People are bored (ignorant) of incident alarm messages, as they are not
+      responsible to react.
+    measure: By the definition of target groups for incidents people are only getting
       alarms for incidents they are in charge for.
     difficultyOfImplementation:
       knowledge: 2
@@ -163,9 +193,12 @@ Monitoring:
     - Alerting
     samm: OE1-B
     samm2: o-operational-management|B|3
+    iso27001-2017:
+    - not explicitly covered by ISO 27001 - too specific
+    - 16.1.5
   Visualized metrics:
-    risk: Not vizualized metrics lead to restricted usage of metrics.
-    measure: Metrics are vizualized in real time in a user friendly way.
+    risk: Not visualized metrics lead to restricted usage of metrics.
+    measure: Metrics are visualized in real time in a user friendly way.
     difficultyOfImplementation:
       knowledge: 1
       time: 2
@@ -176,92 +209,6 @@ Monitoring:
     - Simple application metrics
     - Simple system metrics
     samm2: o-incident-management|A|2
-Logging:
-  Centralized application logging:
-    risk: Local stored logs can be unauthorized manipulated by attackers with system
-      access or might be corrupt after an incident. In addition, it is hard to perform
-      an correlation of logs. This leads attacks, which can be performed silently.
-    measure: A centralized logging system is used and applications logs (including
-      application exceptions) are shipped to it.
-    difficultyOfImplementation:
-      knowledge: 1
-      time: 1
-      resources: 1
-    usefulness: 5
-    level: 3
-    dependsOn:
-    - Visualized logging
-    - Alerting
-    samm: SA2-B
-    samm2: o-incident-management|A|1
-  PII logging concept:
-    risk: Personal identifiable information (PII) is logged and the law of GDPR is not followed.
-    measure: A concept how to log PII is documented and applied.
-    difficultyOfImplementation:
-      knowledge: 1
-      time: 1
-      resources: 1
-    usefulness: 1
-    level: 1
-    implementation: rsyslog, logstash, fluentd, bash
-    samm2: o-incident-management|A|1
-  Logging of security events:
-    risk: No track of security-relevant events makes it harder to analyse an incident.
-    measure: Security-relevant events like login/logout or creation, change, deletion of users should be logged.
-    difficultyOfImplementation:
-      knowledge: 1
-      time: 1
-      resources: 1
-    usefulness: 4
-    level: 1
-    dependsOn:
-      - PII logging concept
-    implementation: rsyslog, logstash, fluentd, bash
-    samm2: o-incident-management|A|1
-  Centralized system logging:
-    risk: Local stored system logs can be unauthorized manipulated by attackers or
-      might be corrupt after an incident. In addition, it is hard to perform a aggregation
-      of logs.
-    measure: By using centralized logging logs are protected against unauthorized
-      modification.
-    difficultyOfImplementation:
-      knowledge: 1
-      time: 1
-      resources: 1
-    usefulness: 2
-    level: 1
-    implementation: rsyslog, Logstash
-    samm2: o-incident-management|A|1
-  Correlation of security events:
-    risk: Detection of security related events with hints on different systems/tools/metrics
-      is not possible.
-    measure: Events are correlated on one system. For example the correlation and
-      visualisationof enhance login tries combined with successfull logins.
-    difficultyOfImplementation:
-      knowledge: 4
-      time: 4
-      resources: 4
-    usefulness: 3
-    level: 4
-    dependsOn:
-    - Visualized logging
-    - Alerting
-    samm2: o-incident-management|A|2
-  Visualized logging:
-    risk: System and application protocols are not visualized properly which leads
-      to no or very limited logging assessment. Specally developers might have difficulty
-      to read applications logs with unusually tools like the Linux tool 'cat'
-    measure: Protocols are visualized in a simple to use real time monitoring system.
-      The GUI gives the ability to search for specal attributes in the protocol.
-    difficultyOfImplementation:
-      knowledge: 1
-      time: 3
-      resources: 3
-    usefulness: 4
-    level: 2
-    dependsOn:
-    - Centralized system logging
-    - Centralized application logging
-    implementation: ELK-Stack
-    samm2: o-incident-management|A|1
+    iso27001-2017:
+    - 12.1.3
 ...

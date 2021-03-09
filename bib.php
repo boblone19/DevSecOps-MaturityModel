@@ -1,5 +1,10 @@
 <?php
-error_reporting(E_ERROR);
+require __DIR__ . '/vendor/autoload.php';
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+define('NUMBER_LEVELS', 4);
+define('IS_SHOW_EVIDENCE_TODO', false);
 
 function readCSV($filename, $delimiter)
 {
@@ -20,10 +25,10 @@ function readCSV($filename, $delimiter)
     return $data;
 }
 
-function elementIsSelected($elementName)
+function elementIsSelected($activityName)
 {
     foreach (getCsv() as $element) {
-        if ($elementName == $element["element"]) {
+        if ($activityName == $element["element"]) {
             return true;
         }
     }
@@ -35,4 +40,23 @@ function getCsv() {
     $csvFile = 'selectedData.csv';
     $csv= readCSV($csvFile, ",");
     return $csv;
+}
+
+function getFlattenedArray($array, $index) {
+    if(!array_key_exists($index, $array)) {
+        return "TODO";   
+    }
+
+    $return = "";
+    $potentialArray = $array[$index];
+    if(is_array($potentialArray)) {
+        $return .= "<ul>";
+        foreach($potentialArray as $element => $content) {
+            $return .= "<li>$content</li>";
+        }
+        $return .= "</ul>";
+    }else {
+        $return .= $potentialArray;
+    }
+    return $return;
 }
